@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>find and findAll</title>
+
+    <script>
+        function findMe(event){
+            let output;
+            let text = document.getElementsByTagName("p")[0].textContent;
+            let findValue = document.getElementsByTagName("input")[0].value;
+            console.log(event.target.value);
+            // console.log("ssss" + findValue);
+            // let position1 = text.indexOf(findValue);
+            // let position2 = text.matchAll(findValue);
+            // let position3 = text.search(findValue);
+            // let position4 = text.match(findValue);
+            let position = text.includes(findValue);
+            // console.log("position1 "+ position1);
+            // console.log("position "+ position);
+            // console.log("position2 "+ position2);
+            // console.log("position3 "+ position3);
+            // console.log("position4 "+ position4);
+
+            if(position){
+             console.log("Inside the if"+event.target.textContent);
+            if(event.target.textContent === "Find"){
+             output = text.replace(findValue,"<mark>"+findValue+"</mark>");
+            }
+            else if(event.target.textContent === "Find All"){
+             output = text.replaceAll(findValue,"<mark>"+findValue+"</mark>");
+            }
+            document.getElementsByTagName("p")[0].innerHTML = output;
+            }
+            else{
+            document.getElementsByTagName("p")[1].innerHTML = "<span>No matches found for your search</span>";
+            }
+
+        }
+
+    </script>
+     <style>
+        mark{
+            display: inline-block;
+            background-color: pink;
+        }
+        span{
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <p>Apples are red, Oranges are orange</p>
+    <label for=""> Word: </label>
+    <input type="text">
+    <button class="btn" onclick="findMe(event)">Find</button>
+    <button onclick="findMe(event)">Find All</button>
+    <p></p>
+    
+</body>
+</html>
