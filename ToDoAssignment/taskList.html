@@ -1,0 +1,178 @@
+<!-- 
+Assignment 1  Individual task
+Vehicle Maintenance Tracker
+Basic Features:
+    add Task
+       add vehicle name, model, task detail, due date
+       Button to store these info on localStorage
+    View All Tasks
+       Display the list of tasks with:
+       Vehicle Name, Task Description, Date, Status (Pending/Completed)
+       Buttons (Mark as Complete, Edit, Delete)
+    Edit Task
+       Allow editing an existing task (with dropdown to select the options).
+       Mark Task as Completed
+       Clicking a button should change the task’s status and apply a visual style (like strikethrough).
+    Delete Task
+    Remove a task from the list and localStorage.
+    Filter Options
+       View all, only Pending, or only Completed tasks using radio buttons or a dropdown.
+    LocalStorage Integration
+       All data should be saved locally.
+       On page reload, the task list should be restored. -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Task List</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      background-color: #f0f0f0;
+    }
+    h1 {
+      color: #333;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: white;
+      box-shadow: 0 0 5px black;
+    }
+    th, td {
+      padding: 12px;
+      border: 1px solid white;
+      text-align: left;
+    }
+    th {
+      background-color: white;
+    }
+    tr.completed td {
+      text-decoration: line-through;
+      color: gray;
+    }
+    .actions button {
+      margin-right: 5px;
+      padding: 5px 10px;
+      border: none;
+      color: white;
+      border-radius: 4px;
+    }
+    .complete-btn { 
+      background-color: #4caf50;
+     }
+    .edit-btn { 
+      background-color: #2196f3; 
+    }
+    .delete-btn {
+       background-color: #f44336; 
+      }
+    .top-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .filter-group label {
+      margin-right: 10px;
+    }
+    .add-btn {
+      padding: 10px 15px;
+      background: black;
+      color: white;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="top-controls">
+    <h1>Task List</h1>
+    <button class="add-btn" onclick="location.href='addTask.html'"> Add Task</button>
+  </div>
+
+  <div class="filter-group">
+    <label><input type="radio" name="filter" value="all" checked> All</label>
+    <label><input type="radio" name="filter" value="pending"> Pending</label>
+    <label><input type="radio" name="filter" value="completed"> Completed</label>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Vehicle Name</th>
+        <th>Model</th>
+        <th>Task</th>
+        <th>Due Date</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="taskTableBody"></tbody>
+  </table>
+
+  <script>
+    var tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+    function showTasks(filter = "all") {
+      var tbody = document.getElementById("taskTableBody");
+      tbody.innerHTML = "";
+
+      tasks.forEach((t, i) => {
+        if (filter == "pending" && t.status != "pending") return;
+        if (filter == "completed" && t.status != "completed") return;
+
+        var row = document.createElement("tr");
+        if (t.status == "completed"){
+         row.classList.add("completed")
+        };
+
+        row.innerHTML = `
+          <td>${t.vehicleName}</td>
+          <td>${t.vehicleModel}</td>
+          <td>${t.taskDetail}</td>
+          <td>${t.dueDate}</td>
+          <td>${t.status}</td>
+          <td class="actions">
+            <button class="complete-btn" onclick="markComplete(${i})">Complete</button>
+            <button class="edit-btn" onclick="editTask(${i})">Edit</button>
+            <button class="delete-btn" onclick="deleteTask(${i})">Delete</button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function markComplete(index) {
+      tasks[index].status = "completed";
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+      showTasks(getSelectedFilter());
+    }
+
+    function editTask(index) {
+      location.href = `addTask.html?editIndex=${index}`;
+    }
+
+    function deleteTask(index) {
+        tasks.splice(index, 1);
+        localStorage.setItem("tasks", JSON.stringify(tasks));
+        showTasks(getSelectedFilter());
+    }
+
+    function getSelectedFilter() {
+      return document.querySelector('input[name="filter"]:checked').value;
+    }
+
+    document.querySelectorAll('input[name="filter"]').forEach(radio => {
+      radio.addEventListener("change", () => {
+        showTasks(getSelectedFilter());
+      });
+    });
+
+    // Initial display
+    showTasks();
+  </script>
+</body>
+</html>

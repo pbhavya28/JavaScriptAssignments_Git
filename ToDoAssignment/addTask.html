@@ -1,0 +1,166 @@
+<!-- 
+Assignment 1  Individual task
+Vehicle Maintenance Tracker
+Basic Features:
+    add Task
+       add vehicle name, model, task detail, due date
+       Button to store these info on localStorage
+    View All Tasks
+       Display the list of tasks with:
+       Vehicle Name, Task Description, Date, Status (Pending/Completed)
+       Buttons (Mark as Complete, Edit, Delete)
+    Edit Task
+       Allow editing an existing task (with dropdown to select the options).
+       Mark Task as Completed
+       Clicking a button should change the task’s status and apply a visual style (like strikethrough).
+    Delete Task
+    Remove a task from the list and localStorage.
+    Filter Options
+       View all, only Pending, or only Completed tasks using radio buttons or a dropdown.
+    LocalStorage Integration
+       All data should be saved locally.
+       On page reload, the task list should be restored. -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Add Task</title>
+  <style>
+    body {
+      background-color: gray;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      padding-top: 40px;
+    }
+    h1 {
+      color: white;
+    }
+    .container {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+      width: 350px;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      box-sizing: border-box;
+    }
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 10px;
+      background-color: black;
+      color: white;
+
+      border-radius: 5px;
+      font-weight: bold;
+      
+    }
+    .back {
+      background-color: silver;
+    }
+  </style>
+</head>
+<body>
+  <h1>Add Task</h1>
+  <div class="container">
+    <label for="vehicleName">Vehicle Name:</label>
+    <input required type="text" id="vehicleName">
+
+    <label for="vehicleModel">Model:</label>
+    <input required type="text" id="vehicleModel">
+
+    <label for="taskDetail">Task:</label>
+    <input required type="text" id="taskDetail" list="taskOptions">
+    <datalist id="taskOptions">
+      <option value="Service">
+      <option value="Cleaning">
+      <option value="PUC Renew">
+      <option value="Insurance Renew">
+    </datalist>
+
+    <label for="dueDate">Due Date:</label>
+    <input required type="date" id="dueDate" oninput="validateDate()">
+
+    <button onclick="saveTask()">Save Task</button>
+    <button class="back" onclick="location.href='taskList.html'">Back to Task List</button>
+  </div>
+
+  <script>
+    var editIndex = null;
+    var vehicleInput = document.getElementById("vehicleName");
+    var modelInput = document.getElementById("vehicleModel");
+    var taskInput = document.getElementById("taskDetail");
+    var dateInput = document.getElementById("dueDate");
+
+    function validateDate(){
+            var curr_date = new Date();
+            var currentdate = new Date(curr_date.getFullYear(),curr_date.getMonth(),curr_date.getDate());
+            var mydate = new Date(document.getElementById('addDueDate').value);
+
+            if(currentdate > mydate) {
+                document.getElementById('addDueDate').value = null;
+                alert("Enter the joining date of future");
+            }
+        };
+
+    function getParam(name) {
+      return new URLSearchParams(location.search).get(name);
+    }
+
+    window.onload = function () {
+      var idx = getParam("editIndex");
+      if (idx != null) {
+        editIndex = Number(idx);
+        var tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+        var t = tasks[editIndex];
+        if (t) {
+          vehicleInput.value = t.vehicleName;
+          vehicleInput.readOnly = true;
+          modelInput.value = t.vehicleModel;
+          taskInput.value = t.taskDetail;
+          dateInput.value = t.dueDate;
+        }
+      }
+    };
+
+    function saveTask() {
+      var vehicleName = vehicleInput.value;
+      var vehicleModel = modelInput.value;
+      var taskDetail = taskInput.value;
+      var dueDate = dateInput.value;
+
+
+      var tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+      var newTask = {
+        vehicleName: vehicleName,
+        vehicleModel: vehicleModel,
+        taskDetail: taskDetail,
+        dueDate: dueDate,
+        status: "pending"
+      };
+
+      if (editIndex != null) {
+        tasks[editIndex] = newTask;
+      } else {
+        tasks.push(newTask);
+      }
+
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+      location.href = "taskList.html";
+    }
+  </script>
+</body>
+</html>
